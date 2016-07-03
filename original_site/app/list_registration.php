@@ -1,6 +1,9 @@
 <?php
 session_start();
-require_once './dbaccess_util.php';
+require_once '../util/dbaccess_util.php';
+require_once '../util/define_util.php';
+require_once '../util/script_util.php';
+
 echo $_SESSION['userID'].'aaa'.'<br>';
 ?>
 <html>
@@ -12,52 +15,9 @@ echo $_SESSION['userID'].'aaa'.'<br>';
 
 <?php
 
-function insert_movies($listName,$userID,$movie1,$movie2,$movie3,$movie4,$movie5,$movie6,$movie7,$movie8,$movie9,$movie10){
-  $insert_db = connect2MySQL();
-  $insert_sql = "insert into movie_db(name,userID,m_1,m_2,m_3,m_4,m_5,m_6,m_7,m_8,m_9,m_10) values(:name,:userID,:m_1,:m_2,:m_3,:m_4,:m_5,:m_6,:m_7,:m_8,:m_9,:m_10)";
-
-  //db接続を確立
-  $insert_db = connect2MySQL();
-
-  //DBに全項目のある1レコードを登録するSQL
-  $insert_sql = "INSERT INTO movie_list(name,userID,m_1,m_2,m_3,m_4,m_5,m_6,m_7,m_8,m_9,m_10)"
-          . "VALUES(:name,:userID,:m_1,:m_2,:m_3,:m_4,:m_5,:m_6,:m_7,:m_8,:m_9,:m_10)";
-
-  //クエリとして用意
-  $insert_query = $insert_db->prepare($insert_sql);
-
-  //SQL文にセッションから受け取った値＆現在時をバインド
-  $insert_query->bindValue(':name',$listName);
-  $insert_query->bindValue(':userID',$userID);
-  $insert_query->bindValue(':m_1',$movie1);
-  $insert_query->bindValue(':m_2',$movie2);
-  $insert_query->bindValue(':m_3',$movie3);
-  $insert_query->bindValue(':m_4',$movie4);
-  $insert_query->bindValue(':m_5',$movie5);
-  $insert_query->bindValue(':m_6',$movie6);
-  $insert_query->bindValue(':m_7',$movie7);
-  $insert_query->bindValue(':m_8',$movie8);
-  $insert_query->bindValue(':m_9',$movie9);
-  $insert_query->bindValue(':m_10',$movie10);
-
-
-
-  //SQLを実行
-  try{
-      $insert_query->execute();
-  } catch (PDOException $e) {
-      //接続オブジェクトを初期化することでDB接続を切断
-      $insert_db=null;
-      return $e->getMessage();
-  }
-
-  $insert_db=null;
-  return null;
-}
-
 if(!isset($_POST['mode'])){
   ?>
-  <form action="./htmlhtml9.php" method="post">
+  <form action="./list_registration.php" method="post">
     ライブラリ名<input type="text" name="listName"><br>
     <input type="text" name="movie1"><br>
     <input type="text" name="movie2"><br>
@@ -89,7 +49,7 @@ if(!isset($_POST['mode'])){
 
   if($_POST['mode1']=='registration' && $_POST['mode']=='confirm'){
     ?>
-    <form action="./htmlhtml9.php" method="post">
+    <form action="./list_registration.php" method="post">
       <input type="submit" name="btn" value="登 録">
       <input type="hidden" name="mode1" value="registration">
       <input type="hidden" name="mode" value="complete">
@@ -125,15 +85,13 @@ if(!isset($_POST['mode'])){
     $movies_array[9] = !empty($_POST['movie10']) ? $_POST['movie10'] : null;
 
     $movies = implode(",",$movies_array);
-    echo $movies;
 
     insert_movies_2($listName,$movies,$userID);
 
-    //insert_movies($listName,$userID,$movie1,$movie2,$movie3,$movie4,$movie5,$movie6,$movie7,$movie8,$movie9,$movie10);
   }
 }
 ?>
 
-<a href="./htmlhtml.php">トップページへ戻る</a>
+<?php echo return_top(); ?>
 </body>
 </html>
